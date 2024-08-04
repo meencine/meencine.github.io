@@ -41,17 +41,18 @@
         }
         #login-form input {
             display: block;
-            width: 100%;
+            width: calc(100% - 40px); /* Ajusta a largura do campo */
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 4px;
+            box-sizing: border-box;
         }
         #login-form input.error {
             background-color: #ffdddd;
         }
         #login-form button {
-            width: 100%;
+            width: calc(100% - 40px); /* Ajusta a largura do botão */
             padding: 10px;
             background-color: #007bff;
             border: none;
@@ -110,17 +111,19 @@
             margin: 20px auto;
             display: flex;
             align-items: center;
+            position: relative;
             box-sizing: border-box;
         }
         #search-bar {
-            width: 100%;
+            width: calc(100% - 30px); /* Ajusta a largura do campo para acomodar o ícone */
             padding: 10px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
         #search-icon {
-            margin-left: -30px;
+            position: absolute;
+            right: 10px; /* Ajusta a posição do ícone dentro do container */
             cursor: pointer;
         }
         #video-panel {
@@ -171,11 +174,10 @@
             <li>Início</li>
         </ul>
     </div>
-    <button id="toggle-sidebar" class="hidden"><img src="toggle-icon.png" alt="Toggle Menu"></button>
+    <button id="toggle-sidebar" class="hidden"><img src="SiteImgs/imgssss.png" alt="Menu"></button>
     <div id="content" class="hidden">
         <div id="search-container">
             <input type="text" id="search-bar" placeholder="Pesquisar...">
-            <img src="SiteImgs/lupa.png" id="search-icon" alt="Search">
         </div>
         <div id="video-panel">
             <div class="video" data-title="Como aprender HTML">
@@ -197,22 +199,61 @@
         </div>
     </div>
     <script>
+        // Função para detectar ferramentas de desenvolvimento e apagar o conteúdo
+        (function() {
+            var isDevelopment = false; // Defina como true para desenvolvimento e false para produção
+
+            function detectDevTools() {
+                var devToolsOpen = false;
+                var threshold = 160;
+                var check = setInterval(function() {
+                    var width = window.outerWidth - window.innerWidth > threshold;
+                    var height = window.outerHeight - window.innerHeight > threshold;
+                    if ((width && height) || (width || height)) {
+                        devToolsOpen = true;
+                    }
+                    if (devToolsOpen) {
+                        clearInterval(check);
+                        // Apaga o conteúdo quando detecta a abertura das ferramentas de desenvolvimento
+                        document.body.innerHTML = '<h1>Desculpe, você não pode acessar este conteúdo.</h1>';
+                    }
+                }, 1000);
+            }
+
+            // Função para detectar a combinação de teclas CTRL + U
+            function detectCtrlU(event) {
+                if ((event.ctrlKey || event.metaKey) && event.key === 'u') {
+                    event.preventDefault(); // Impede a ação padrão do navegador
+                    alert('O acesso ao código-fonte está desativado.');
+                }
+            }
+
+            // Função para desativar o menu de contexto
+            function disableContextMenu(event) {
+                event.preventDefault(); // Impede a ação padrão do botão direito
+                alert('O menu de contexto está desativado.');
+            }
+
+            // Inicia a detecção se não estiver em desenvolvimento
+            if (!isDevelopment) {
+                detectDevTools();
+                document.addEventListener('keydown', detectCtrlU);
+                document.addEventListener('contextmenu', disableContextMenu);
+            }
+        })();
+
         document.getElementById('login-button').addEventListener('click', function() {
             const username = document.getElementById('username');
             const password = document.getElementById('password');
             if (username.value === 'lucasrw' && password.value === 'bonito123') {
                 document.getElementById('login').classList.add('hidden');
-                document.getElementById('content').classList.remove('hidden');
                 document.getElementById('sidebar').classList.remove('hidden');
                 document.getElementById('toggle-sidebar').classList.remove('hidden');
+                document.getElementById('content').classList.remove('hidden');
             } else {
-                if (username.value !== 'lucasrw') {
-                    username.classList.add('error');
-                }
-                if (password.value !== 'bonito123') {
-                    password.classList.add('error');
-                }
-                setTimeout(() => {
+                username.classList.add('error');
+                password.classList.add('error');
+                setTimeout(function() {
                     username.classList.remove('error');
                     password.classList.remove('error');
                 }, 3000);
